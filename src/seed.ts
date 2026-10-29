@@ -1,5 +1,5 @@
 import { prisma } from './lib/prisma';
-import { Role, Condition } from '@prisma/client';
+import { Role, Condition, Category } from '@prisma/client';
 import { hash } from 'bcrypt';
 import * as config from '../config/settings.development.json';
 
@@ -22,6 +22,7 @@ async function main() {
   });
   for (const data of config.defaultData) {
     const condition = data.condition as Condition || Condition.good;
+    const category = data.category as Category || Category.Other;
     console.log(`  Adding stuff: ${JSON.stringify(data)}`);
      
     await prisma.stuff.upsert({
@@ -32,6 +33,7 @@ async function main() {
         quantity: data.quantity,
         owner: data.owner,
         condition,
+        category,
       },
     });
   }

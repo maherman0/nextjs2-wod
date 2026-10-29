@@ -7,8 +7,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Stuff } from '@prisma/client';
 import { EditStuffSchema } from '@/lib/validationSchemas';
 import { editStuff } from '@/lib/dbActions';
+import type { InferType } from 'yup';
 
-const onSubmit = async (data: Stuff) => {
+type EditStuffFormData = InferType<typeof EditStuffSchema>;
+
+
+const onSubmit = async (data: EditStuffFormData) => {
   // console.log(`onSubmit data: ${JSON.stringify(data, null, 2)}`);
   await editStuff(data);
   swal('Success', 'Your item has been updated', 'success', {
@@ -22,7 +26,7 @@ const EditStuffForm = ({ stuff }: { stuff: Stuff }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Stuff>({
+  } = useForm<EditStuffFormData>({
     resolver: yupResolver(EditStuffSchema),
   });
   // console.log(stuff);
@@ -72,6 +76,23 @@ const EditStuffForm = ({ stuff }: { stuff: Stuff }) => {
                     <option value="poor">Poor</option>
                   </select>
                   <div className="invalid-feedback">{errors.condition?.message}</div>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Category</Form.Label>
+                    <select
+                      {...register('category')}
+                      defaultValue={stuff.category}
+                      className={`form-control ${errors.category ? 'is-invalid' : ''}`}
+                      required
+                    >
+                      <option value="Food">Food</option>
+                      <option value="Sporting_Goods">Sporting Goods</option>
+                      <option value="Electronics">Electronics</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <div className="invalid-feedback">
+                      {errors.category?.message}
+                    </div>
                 </Form.Group>
                 <input type="hidden" {...register('owner')} value={stuff.owner} />
                 <Form.Group className="form-group">
